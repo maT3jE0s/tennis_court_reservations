@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.demo.dto.CourtRequest;
 import com.example.demo.entity.Court;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.service.CourtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,6 +54,43 @@ public class CourtControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.courtNumber").value(1));
+    }
+
+    @Test
+    void testCreate_invalidRequest() throws Exception {
+        CourtRequest request = new CourtRequest(null, 10L);
+
+        mockMvc.perform(post("/api/courts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.courtNumber").value("Court number is required"));
+    }
+
+    @Test
+    void testCreate_surfdaceTypeNotFound() throws Exception {
+        CourtRequest request = new CourtRequest(1, 10L);
+        when(courtService.create(any()))
+            .thenThrow(new ResourceNotFoundException("Surface type not found"));;
+
+        mockMvc.perform(post("/api/courts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Surface type not found"));
+    }
+
+    @Test
+    void testCreate_courtWithCourtNumberExists() throws Exception {
+        CourtRequest request = new CourtRequest(1, 10L);
+        when(courtService.create(any()))
+            .thenThrow(new IllegalArgumentException("Court with number 1 already exists"));
+
+        mockMvc.perform(post("/api/courts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Court with number 1 already exists"));
     }
 
     @Test

@@ -12,6 +12,7 @@ import com.example.demo.entity.Reservation;
 import com.example.demo.entity.Reservation.GameType;
 import com.example.demo.entity.SurfaceType;
 import com.example.demo.entity.User;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CourtRepository;
 import com.example.demo.repository.ReservationRepository;
 import com.example.demo.repository.UserRepository;
@@ -49,8 +50,7 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public Reservation getById(Long id) {
-        requireReservation(id);
-        return reservationRepository.findById(id);
+        return requireReservation(id);
     }
 
     @Transactional(readOnly = true)
@@ -102,7 +102,7 @@ public class ReservationService {
     private Reservation requireReservation(Long id) {
         Reservation reservation = reservationRepository.findById(id);
         if (reservation == null)
-            throw new RuntimeException("Reservation does not exist");
+            throw new ResourceNotFoundException("Reservation not found");
 
         return reservation;
     }
@@ -110,16 +110,16 @@ public class ReservationService {
     private Court requireCourt(ReservationRequest request) {
         Court court = courtRepository.findByCourtNumber(request.getCourtNumber());
         if (court == null)
-            throw new RuntimeException("Court not found");
+            throw new ResourceNotFoundException("Court not found");
 
         return court;
     }
 
     private void checkTimeInterval(Long courtId, ReservationRequest request, Long excludeId) {
         if (request.getStartTime().isAfter(request.getEndTime()))
-            throw new RuntimeException("Reservation must start before it ends");
+            throw new IllegalArgumentException("Reservation must start before it ends");
         if (reservationRepository.overlaps(courtId, request.getStartTime(), request.getEndTime(), excludeId))
-            throw new RuntimeException("The time interval overlaps with an existing reservation");
+            throw new IllegalArgumentException("The time interval overlaps with an existing reservation");
     }
 
     private User getUser(ReservationRequest request) {

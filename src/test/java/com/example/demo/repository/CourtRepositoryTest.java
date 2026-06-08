@@ -31,6 +31,15 @@ public class CourtRepositoryTest {
         surfaceType = surfaceTypeRepository.save(new SurfaceType("Grass", 0.5));
         court = courtRepository.save(new Court(1, surfaceType));
     }
+
+    @Test
+    void testUpdate() {
+        court.setCourtNumber(7);
+        Court result = courtRepository.save(court);
+
+        assertNotNull(result);
+        assertEquals(7, result.getCourtNumber());
+    }
     
     @Test
     void testFindByCourtNumber() {

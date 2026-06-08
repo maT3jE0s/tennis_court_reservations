@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.example.demo.entity.BaseEntity;
 
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 

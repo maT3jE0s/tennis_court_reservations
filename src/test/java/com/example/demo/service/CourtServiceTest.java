@@ -84,7 +84,7 @@ public class CourtServiceTest {
                 RuntimeException.class,
                 () -> courtService.create(request));
 
-        assertEquals("Surface type does not exist", exception.getMessage());
+        assertEquals("Surface type not found", exception.getMessage());
     }
 
     @Test
@@ -130,7 +130,7 @@ public class CourtServiceTest {
                 RuntimeException.class,
                 () -> courtService.update(2L, updateRequest));
 
-        assertEquals("Court with id 2 does not exist", exception.getMessage());
+        assertEquals("Court not found", exception.getMessage());
     }
 
     @Test
@@ -143,7 +143,7 @@ public class CourtServiceTest {
                 RuntimeException.class,
                 () -> courtService.update(1L, updateRequest));
 
-        assertEquals("Surface type does not exist", exception.getMessage());
+        assertEquals("Surface type not found", exception.getMessage());
     }
 
     @Test

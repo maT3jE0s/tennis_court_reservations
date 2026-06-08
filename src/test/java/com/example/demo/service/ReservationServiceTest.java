@@ -215,7 +215,7 @@ public class ReservationServiceTest {
             RuntimeException.class,
             () -> reservationService.update(2L, request));
 
-        assertEquals("Reservation does not exist", ex.getMessage());
+        assertEquals("Reservation not found", ex.getMessage());
     }
 
     @Test

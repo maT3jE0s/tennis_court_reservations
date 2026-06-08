@@ -105,7 +105,7 @@ public class SurfaceTypeServiceTest {
                 RuntimeException.class,
                 () -> surfaceTypeService.update(99L, updateRequest));
 
-        assertEquals("Surface type with id 99 does not exist", exception.getMessage());
+        assertEquals("Surface type not found", exception.getMessage());
     }
 
     @Test
